@@ -1,0 +1,29 @@
+# IDE / editor
+.idea/
+.vscode/
+*.iml
+
+# OS junk
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Database credentials (copy php/config.example.php to php/config.php)
+php/config.php
+
+# Generated database backups (keep the .htaccess that protects the folder)
+pages/Backup/*.sql
+pages/Backup/*.zip
+pages/Backup/*.sql.zip
+
+# Logs and temp files
+*.log
+*.tmp
+*.cache
+
+# Dependencies (if added later)
+/vendor/
+/node_modules/
+
+# Design source files
+*.psd
