@@ -4,7 +4,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { useCan } from '@/hooks/use-can';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { ClipboardList, FilePlus2, FlaskConical, LayoutGrid, ShieldCheck, Stethoscope, TestTubes, Users } from 'lucide-react';
+import { BarChart3, ClipboardList, FilePlus2, FlaskConical, LayoutGrid, ShieldCheck, Stethoscope, TestTubes, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: (NavItem & { permission?: string })[] = [
@@ -54,6 +54,12 @@ const mainNavItems: (NavItem & { permission?: string })[] = [
         url: '/tests',
         icon: TestTubes,
         permission: 'catalog.view',
+    },
+    {
+        title: 'Reports',
+        url: '/reports',
+        icon: BarChart3,
+        permission: 'reports.business',
     },
 ];
 
