@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Enums\ResultFlag;
+use App\Models\Concerns\RecordsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Result extends Model
 {
+    use RecordsActivity;
+
     protected $fillable = [
         'visit_test_id',
         'test_parameter_id',

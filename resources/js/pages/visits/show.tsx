@@ -3,10 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
+import { useCan } from '@/hooks/use-can';
 import { formatDateTime, formatMoney, patientAge } from '@/lib/format';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import { Printer } from 'lucide-react';
+import { FileText, Printer } from 'lucide-react';
 
 interface VisitDetail {
     id: number;
@@ -40,6 +41,8 @@ interface VisitDetail {
 
 export default function VisitShow({ visit }: { visit: VisitDetail }) {
     const { flash, name: appName } = usePage<SharedData>().props;
+    const can = useCan();
+    const hasVerifiedResults = visit.samples.some((sample) => ['verified', 'reported'].includes(sample.status));
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Visits', href: '/visits' },
@@ -59,9 +62,18 @@ export default function VisitShow({ visit }: { visit: VisitDetail }) {
 
                 <div className="flex items-center justify-between">
                     <h1 className="text-xl font-semibold">Visit {visit.visit_number}</h1>
-                    <Button variant="outline" onClick={() => window.print()}>
-                        <Printer className="size-4" /> Print receipt
-                    </Button>
+                    <div className="flex gap-2">
+                        {hasVerifiedResults && can('reports.view') && (
+                            <Button asChild>
+                                <a href={`/visits/${visit.id}/report`} target="_blank" rel="noopener">
+                                    <FileText className="size-4" /> Lab report (PDF)
+                                </a>
+                            </Button>
+                        )}
+                        <Button variant="outline" onClick={() => window.print()}>
+                            <Printer className="size-4" /> Print receipt
+                        </Button>
+                    </div>
                 </div>
 
                 <div id="receipt" className="flex flex-col gap-4">

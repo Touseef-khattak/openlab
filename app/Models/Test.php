@@ -41,4 +41,9 @@ class Test extends Model
     {
         return $this->hasMany(TestParameter::class)->orderBy('display_order');
     }
+
+    public function visitTests(): HasMany
+    {
+        return $this->hasMany(VisitTest::class);
+    }
 }

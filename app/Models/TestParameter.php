@@ -38,6 +38,11 @@ class TestParameter extends Model
         return $this->hasMany(ReferenceRange::class);
     }
 
+    public function results(): HasMany
+    {
+        return $this->hasMany(Result::class);
+    }
+
     /**
      * The reference band that applies to a given patient: most specific
      * match first (gender + age band), falling back to generic bands.

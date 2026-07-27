@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResultEntryController;
 use App\Http\Controllers\SampleController;
+use App\Http\Controllers\TestController;
+use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\WorklistController;
 use Illuminate\Support\Facades\Route;
@@ -14,9 +18,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::middleware('can:patients.view')->group(function () {
         Route::get('patients', [PatientController::class, 'index'])->name('patients.index');
@@ -25,6 +27,17 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('can:patients.manage')->group(function () {
         Route::post('patients', [PatientController::class, 'store'])->name('patients.store');
         Route::put('patients/{patient}', [PatientController::class, 'update'])->name('patients.update');
+    });
+
+    Route::get('tests', [TestController::class, 'index'])
+        ->middleware('can:catalog.view')->name('tests.index');
+    Route::middleware('can:catalog.manage')->group(function () {
+        Route::get('tests/create', [TestController::class, 'create'])->name('tests.create');
+        Route::post('tests', [TestController::class, 'store'])->name('tests.store');
+        Route::get('tests/{test}/edit', [TestController::class, 'edit'])->whereNumber('test')->name('tests.edit');
+        Route::put('tests/{test}', [TestController::class, 'update'])->whereNumber('test')->name('tests.update');
+        Route::patch('tests/{test}/toggle', [TestController::class, 'toggle'])->whereNumber('test')->name('tests.toggle');
+        Route::delete('tests/{test}', [TestController::class, 'destroy'])->whereNumber('test')->name('tests.destroy');
     });
 
     Route::get('doctors', [DoctorController::class, 'index'])
@@ -50,6 +63,18 @@ Route::middleware(['auth'])->group(function () {
         Route::get('samples/{sample}/entry', [ResultEntryController::class, 'show'])->name('samples.entry');
         Route::put('samples/{sample}/results', [ResultEntryController::class, 'update'])->name('samples.results.update');
     });
+
+    Route::middleware('can:results.verify')->group(function () {
+        Route::get('verification', [VerificationController::class, 'index'])->name('verification.index');
+        Route::get('samples/{sample}/verify', [VerificationController::class, 'show'])->name('samples.verify.show');
+        Route::post('samples/{sample}/verify', [VerificationController::class, 'verify'])->name('samples.verify');
+        Route::post('samples/{sample}/reject', [VerificationController::class, 'reject'])->name('samples.reject');
+    });
+
+    Route::get('visits/{visit}/report', [ReportController::class, 'show'])
+        ->whereNumber('visit')
+        ->middleware('can:reports.view')
+        ->name('visits.report');
 });
 
 require __DIR__.'/settings.php';
