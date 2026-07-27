@@ -71,10 +71,18 @@ Route::middleware(['auth'])->group(function () {
         Route::post('samples/{sample}/reject', [VerificationController::class, 'reject'])->name('samples.reject');
     });
 
-    Route::get('visits/{visit}/report', [ReportController::class, 'show'])
+    Route::get('visits/{visit}/report', [ReportController::class, 'labReport'])
         ->whereNumber('visit')
         ->middleware('can:reports.view')
         ->name('visits.report');
+
+    // Business / MIS reports (admin — reports.business)
+    Route::middleware('can:reports.business')->group(function () {
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/daily-collection', [ReportController::class, 'dailyCollection'])->name('reports.daily-collection');
+        Route::get('reports/revenue', [ReportController::class, 'revenue'])->name('reports.revenue');
+        Route::get('reports/volume-tat', [ReportController::class, 'volumeTat'])->name('reports.volume-tat');
+    });
 });
 
 require __DIR__.'/settings.php';
