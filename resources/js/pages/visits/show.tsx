@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { useCan } from '@/hooks/use-can';
 import { formatDateTime, formatMoney, patientAge } from '@/lib/format';
-import { type BreadcrumbItem, type SharedData } from '@/types';
+import { type BreadcrumbItem, type LabSettings, type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { FileText, Printer } from 'lucide-react';
 
@@ -39,8 +39,9 @@ interface VisitDetail {
     }[];
 }
 
-export default function VisitShow({ visit }: { visit: VisitDetail }) {
+export default function VisitShow({ visit, branding }: { visit: VisitDetail; branding: LabSettings }) {
     const { flash, name: appName } = usePage<SharedData>().props;
+    const labName = branding.name || appName;
     const can = useCan();
     const hasVerifiedResults = visit.samples.some((sample) => ['verified', 'reported'].includes(sample.status));
 
@@ -79,7 +80,15 @@ export default function VisitShow({ visit }: { visit: VisitDetail }) {
                 <div id="receipt" className="flex flex-col gap-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-center text-lg">{appName}</CardTitle>
+                            {branding.logo && (
+                                <img src={branding.logo} alt="Lab logo" className="mx-auto mb-1 max-h-12 object-contain" />
+                            )}
+                            <CardTitle className="text-center text-lg">{labName}</CardTitle>
+                            {(branding.address || branding.phone) && (
+                                <p className="text-muted-foreground text-center text-xs">
+                                    {[branding.address, branding.phone].filter(Boolean).join(' · ')}
+                                </p>
+                            )}
                             <p className="text-muted-foreground text-center text-xs">
                                 Receipt · {visit.visit_number} · {formatDateTime(visit.visited_at)}
                             </p>
