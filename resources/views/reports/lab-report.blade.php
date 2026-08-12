@@ -30,9 +30,14 @@
 </head>
 <body>
     <div class="header">
-        {{-- Branding (logo, address, contact) becomes configurable in Phase 2 settings. --}}
-        <h1>{{ config('app.name') }}</h1>
-        <p>Clinical Laboratory Report</p>
+        @if ($branding->logo)
+            <img src="{{ $branding->logo }}" alt="Logo" style="max-height: 56px; margin-bottom: 4px;">
+        @endif
+        <h1>{{ $branding->name ?: config('app.name') }}</h1>
+        @if ($branding->address || $branding->phone || $branding->email)
+            <p>{{ collect([$branding->address, $branding->phone, $branding->email])->filter()->implode(' · ') }}</p>
+        @endif
+        <p>{{ $branding->report_header ?: 'Clinical Laboratory Report' }}</p>
     </div>
 
     <table class="meta">
