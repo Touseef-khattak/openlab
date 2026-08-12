@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SampleStatus;
+use App\Models\LabSetting;
 use App\Models\Sample;
 use App\Models\Visit;
 use App\Models\VisitTest;
@@ -64,6 +65,7 @@ class ReportController extends Controller
             ->first(fn ($result) => $result->verifiedBy !== null);
 
         $pdf = Pdf::loadView('reports.lab-report', [
+            'branding' => LabSetting::current(),
             'visit' => $visit,
             'patient' => $patient,
             'sections' => $sections,
