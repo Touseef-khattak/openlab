@@ -21,7 +21,9 @@ class AuditLogController extends Controller
                     ->where('description', 'like', "%{$term}%")
                     ->orWhere('subject_type', 'like', "%{$term}%"));
             })
-            ->latest()
+            // id desc = insertion order; deterministic when several events
+            // share the same second.
+            ->latest('id')
             ->paginate(30)
             ->withQueryString()
             ->through(fn (Activity $activity) => [
