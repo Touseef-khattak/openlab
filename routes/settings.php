@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LabSettingsController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -7,6 +8,11 @@ use Inertia\Inertia;
 
 Route::middleware('auth')->group(function () {
     Route::redirect('settings', 'settings/profile');
+
+    Route::middleware('can:settings.manage')->group(function () {
+        Route::get('settings/lab', [LabSettingsController::class, 'edit'])->name('lab-settings.edit');
+        Route::put('settings/lab', [LabSettingsController::class, 'update'])->name('lab-settings.update');
+    });
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
