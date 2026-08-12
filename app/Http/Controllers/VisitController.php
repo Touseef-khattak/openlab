@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\CreateVisit;
 use App\Http\Requests\StoreVisitRequest;
 use App\Models\Doctor;
+use App\Models\LabSetting;
 use App\Models\Test;
 use App\Models\Visit;
 use Illuminate\Http\RedirectResponse;
@@ -72,6 +73,7 @@ class VisitController extends Controller
 
         return Inertia::render('visits/show', [
             'visit' => $visit,
+            'branding' => LabSetting::current(),
         ]);
     }
 }
