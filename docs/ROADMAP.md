@@ -115,7 +115,8 @@ Business/analytics reports for the owner (distinct from the clinical patient PDF
 - [x] **Revenue over period** (`/reports/revenue?from=&to=`): totals, daily net-revenue bar chart (inline SVG, single-series, theme-aware per dataviz skill), revenue-by-category table
 - [x] **Volume & TAT** (`/reports/volume-tat?from=&to=`): test order counts + revenue (bar-in-cell), avg turnaround per stage (registration→report, collection→report, entry→verification — computed in PHP for MySQL/SQLite portability), current pending-backlog snapshot
 - [x] CSV export on each (`&format=csv`, streamed). Reports sidebar nav (reports.business). 8 feature tests; suite **60 passed / 287 assertions**
-- **Deferred (noted for later):** doctor referral/commission report (user dropped from v1); payment-mode field (cash/card/online) → needs a `visits.payment_mode` column before a cash-vs-card split is possible; PDF export of MIS reports; critical-results & positive-infectious-disease registers; audit-log viewer
+- [x] **Doctor commission** (`/reports/doctor-commission?from=&to=`, added 2026-07-20) — per-doctor referred visits, referred net, commission % and commission payable (net × percent); totals + CSV. Pulled forward from Phase 2. 3 feature tests; suite **63 passed**
+- **Deferred (noted for later):** payment-mode field (cash/card/online) → needs a `visits.payment_mode` column before a cash-vs-card split is possible; PDF export of MIS reports; critical-results & positive-infectious-disease registers; audit-log viewer
 - **Not possible without new modules:** inventory/reagent, QC/control trends, login/session reports
 
 ## Phase 2 — Make it a sellable product
@@ -124,7 +125,7 @@ Business/analytics reports for the owner (distinct from the clinical patient PDF
 - [ ] Lab branding: name, logo, report header/footer, receipt format — per tenant settings UI
 - [ ] Patient report portal: public verified-report page via signed URL + **QR code printed on report**
 - [ ] WhatsApp / SMS report delivery (queued; provider abstraction — e.g. Twilio/local gateways); message-credit accounting
-- [ ] Doctor commission statements (period reports per referring doctor)
+- [x] Doctor commission statements (period reports per referring doctor) — **DONE 2026-07-20, pulled forward into Reports §1.9**
 - [ ] Audit log viewer (admin)
 - [ ] Automated encrypted backups (per-tenant DB dump, off-site target)
 - [ ] Subscription billing + plan gating (users, branches, credits)
