@@ -44,6 +44,18 @@ export interface CatalogTest {
     category?: { id: number; name: string } | null;
 }
 
+export interface LabSettings {
+    id: number;
+    name: string | null;
+    logo: string | null;
+    address: string | null;
+    phone: string | null;
+    email: string | null;
+    report_header: string | null;
+    report_footer: string | null;
+    receipt_footer: string | null;
+}
+
 export interface PaginationLink {
     url: string | null;
     label: string;
