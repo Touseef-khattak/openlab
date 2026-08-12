@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { Banknote, LineChart, Timer } from 'lucide-react';
+import { Banknote, LineChart, Stethoscope, Timer } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Reports', href: '/reports' }];
 
@@ -24,6 +24,12 @@ const reports = [
         description: 'Most-ordered tests, average turnaround time per stage, and the current pending backlog.',
         href: '/reports/volume-tat',
         icon: Timer,
+    },
+    {
+        title: 'Doctor commission',
+        description: 'Per-referring-doctor visits, referred net and commission payable for a period.',
+        href: '/reports/doctor-commission',
+        icon: Stethoscope,
     },
 ];
 

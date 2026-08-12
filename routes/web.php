@@ -82,6 +82,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('reports/daily-collection', [ReportController::class, 'dailyCollection'])->name('reports.daily-collection');
         Route::get('reports/revenue', [ReportController::class, 'revenue'])->name('reports.revenue');
         Route::get('reports/volume-tat', [ReportController::class, 'volumeTat'])->name('reports.volume-tat');
+        Route::get('reports/doctor-commission', [ReportController::class, 'doctorCommission'])->name('reports.doctor-commission');
     });
 });
 

@@ -236,6 +236,49 @@ class ReportController extends Controller
         ]);
     }
 
+    public function doctorCommission(Request $request): mixed
+    {
+        [$from, $to] = $this->range($request);
+
+        $rows = Visit::query()
+            ->join('doctors', 'doctors.id', '=', 'visits.doctor_id')
+            ->whereNotNull('visits.doctor_id')
+            ->whereBetween('visits.visited_at', [$from, $to])
+            ->groupBy('doctors.id', 'doctors.name', 'doctors.specialty', 'doctors.commission_percent')
+            ->selectRaw('doctors.name as doctor, doctors.specialty as specialty, doctors.commission_percent as percent, count(*) as visits, sum(visits.net_amount) as net')
+            ->orderByDesc('net')
+            ->get()
+            ->map(fn ($r) => [
+                'doctor' => $r->doctor,
+                'specialty' => $r->specialty,
+                'percent' => (float) $r->percent,
+                'visits' => (int) $r->visits,
+                'net' => (float) $r->net,
+                // Commission accrues on the referred net (post-discount) billing.
+                'commission' => round((float) $r->net * (float) $r->percent / 100, 2),
+            ]);
+
+        if ($request->query('format') === 'csv') {
+            return $this->streamCsv(
+                "doctor-commission-{$from->format('Y-m-d')}_{$to->format('Y-m-d')}.csv",
+                ['Doctor', 'Specialty', 'Commission %', 'Visits', 'Referred Net', 'Commission'],
+                $rows->map(fn ($r) => array_values($r)),
+            );
+        }
+
+        return inertia('reports/doctor-commission', [
+            'from' => $from->format('Y-m-d'),
+            'to' => $to->format('Y-m-d'),
+            'rows' => $rows->values(),
+            'totals' => [
+                'doctors' => $rows->count(),
+                'visits' => $rows->sum('visits'),
+                'net' => $rows->sum('net'),
+                'commission' => round($rows->sum('commission'), 2),
+            ],
+        ]);
+    }
+
     /**
      * Average turnaround per stage, over samples reported in the window.
      * Computed in PHP to stay portable across MySQL and the SQLite test DB.
