@@ -159,6 +159,10 @@ export default function VisitShow({ visit, branding }: { visit: VisitDetail; bra
                                     <span>{formatMoney(Number(visit.net_amount) - Number(visit.paid_amount))}</span>
                                 </div>
                             </div>
+
+                            {branding.receipt_footer && (
+                                <p className="text-muted-foreground mt-2 text-center text-xs">{branding.receipt_footer}</p>
+                            )}
                         </CardContent>
                     </Card>
 
