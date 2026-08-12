@@ -27,6 +27,7 @@ class RolePermissionSeeder extends Seeder
             'reports.view',
             'reports.print',
             'reports.business',
+            'audit.view',
             'users.manage',
             'settings.manage',
         ];

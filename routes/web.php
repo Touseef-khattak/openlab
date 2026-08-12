@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
@@ -84,6 +85,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('reports/volume-tat', [ReportController::class, 'volumeTat'])->name('reports.volume-tat');
         Route::get('reports/doctor-commission', [ReportController::class, 'doctorCommission'])->name('reports.doctor-commission');
     });
+
+    Route::get('audit-log', [AuditLogController::class, 'index'])
+        ->middleware('can:audit.view')
+        ->name('audit.index');
 });
 
 require __DIR__.'/settings.php';
