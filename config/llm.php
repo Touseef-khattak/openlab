@@ -6,7 +6,7 @@ return [
     'provider' => env('LLM_PROVIDER'),
 
     'timeout' => (int) env('LLM_TIMEOUT', 30),
-    'max_output_tokens' => (int) env('LLM_MAX_OUTPUT_TOKENS', 800),
+    'max_output_tokens' => (int) env('LLM_MAX_OUTPUT_TOKENS', 1200),
 
     // Leave true. Set false ONLY for local dev when PHP has no CA bundle
     // (cURL error 60). The correct fix is to configure curl.cainfo in php.ini.
@@ -20,6 +20,9 @@ return [
         'key' => env('GEMINI_API_KEY'),
         'model' => env('GEMINI_MODEL', 'gemini-1.5-flash'),
         'endpoint' => env('GEMINI_ENDPOINT', 'https://generativelanguage.googleapis.com/v1beta'),
+        // Set to 0 to disable "thinking" on Gemini 2.5 models (recommended for
+        // summaries). Leave blank for 1.5 models, which don't support it.
+        'thinking_budget' => ($tb = env('GEMINI_THINKING_BUDGET')) === null ? null : (int) $tb,
     ],
 
     'openai' => [

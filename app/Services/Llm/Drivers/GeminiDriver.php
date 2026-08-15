@@ -39,25 +39,42 @@ class GeminiDriver implements LlmProvider
             $request = $request->withoutVerifying();
         }
 
-        $response = $request
-            ->post($url, [
-                'systemInstruction' => ['parts' => [['text' => $systemPrompt]]],
-                'contents' => [['role' => 'user', 'parts' => [['text' => $userPrompt]]]],
-                'generationConfig' => [
-                    'temperature' => 0.2,
-                    'maxOutputTokens' => $this->maxOutputTokens,
-                ],
-            ]);
+        $generationConfig = [
+            'temperature' => 0.2,
+            'maxOutputTokens' => $this->maxOutputTokens,
+        ];
+
+        // Gemini 2.5 models "think" by default and thinking tokens count against
+        // maxOutputTokens, which truncates the visible answer. Set
+        // GEMINI_THINKING_BUDGET=0 to disable it. Only sent when configured —
+        // 1.5-era models reject thinkingConfig.
+        if (($this->config['thinking_budget'] ?? null) !== null) {
+            $generationConfig['thinkingConfig'] = ['thinkingBudget' => (int) $this->config['thinking_budget']];
+        }
+
+        $response = $request->post($url, [
+            'systemInstruction' => ['parts' => [['text' => $systemPrompt]]],
+            'contents' => [['role' => 'user', 'parts' => [['text' => $userPrompt]]]],
+            'generationConfig' => $generationConfig,
+        ]);
 
         if ($response->failed()) {
             $message = data_get($response->json(), 'error.message', "HTTP {$response->status()}");
             throw new LlmException("Gemini request failed: {$message}");
         }
 
-        $text = data_get($response->json(), 'candidates.0.content.parts.0.text');
+        $json = $response->json();
+        $text = collect(data_get($json, 'candidates.0.content.parts', []))
+            ->pluck('text')
+            ->filter()
+            ->implode('');
+        $finishReason = data_get($json, 'candidates.0.finishReason');
 
         if (blank($text)) {
-            throw new LlmException('Gemini returned an empty response.');
+            $reason = $finishReason ? " (finishReason: {$finishReason})" : '';
+            throw new LlmException(
+                "Gemini returned no text{$reason}. If the model is a 2.5 'thinking' model, set GEMINI_THINKING_BUDGET=0 or raise LLM_MAX_OUTPUT_TOKENS."
+            );
         }
 
         return trim($text);
