@@ -1,3 +1,4 @@
+import { Markdown } from '@/components/markdown';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -112,7 +113,7 @@ export default function VisitShow({ visit, branding }: { visit: VisitDetail; bra
                         <CardContent>
                             {visit.ai_summary ? (
                                 <div className="flex flex-col gap-2">
-                                    <p className="text-sm whitespace-pre-wrap">{visit.ai_summary}</p>
+                                    <Markdown content={visit.ai_summary} />
                                     <p className="text-muted-foreground text-xs">
                                         {visit.ai_summary_provider}
                                         {visit.ai_summary_model ? ` · ${visit.ai_summary_model}` : ''}
