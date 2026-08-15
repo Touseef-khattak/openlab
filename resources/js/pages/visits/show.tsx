@@ -6,8 +6,9 @@ import AppLayout from '@/layouts/app-layout';
 import { useCan } from '@/hooks/use-can';
 import { formatDateTime, formatMoney, patientAge } from '@/lib/format';
 import { type BreadcrumbItem, type LabSettings, type SharedData } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
-import { FileText, Printer } from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { FileText, LoaderCircle, Printer, Sparkles } from 'lucide-react';
+import { useState } from 'react';
 
 interface VisitDetail {
     id: number;
@@ -30,6 +31,11 @@ interface VisitDetail {
     };
     doctor: { id: number; name: string; specialty: string | null } | null;
     creator: { id: number; name: string } | null;
+    ai_summary: string | null;
+    ai_summary_provider: string | null;
+    ai_summary_model: string | null;
+    ai_summary_generated_at: string | null;
+    summary_author: { id: number; name: string } | null;
     samples: { id: number; sample_number: string | null; specimen_type: string; status: string }[];
     visit_tests: {
         id: number;
@@ -44,6 +50,12 @@ export default function VisitShow({ visit, branding }: { visit: VisitDetail; bra
     const labName = branding.name || appName;
     const can = useCan();
     const hasVerifiedResults = visit.samples.some((sample) => ['verified', 'reported'].includes(sample.status));
+    const [generating, setGenerating] = useState(false);
+
+    const generateSummary = () => {
+        setGenerating(true);
+        router.post(`/visits/${visit.id}/summary`, {}, { preserveScroll: true, onFinish: () => setGenerating(false) });
+    };
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Visits', href: '/visits' },
@@ -58,6 +70,11 @@ export default function VisitShow({ visit, branding }: { visit: VisitDetail; bra
                 {flash.success && (
                     <div className="rounded-md border border-green-300 bg-green-50 px-4 py-2 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200">
                         {flash.success}
+                    </div>
+                )}
+                {flash.error && (
+                    <div className="rounded-md border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+                        {flash.error}
                     </div>
                 )}
 
@@ -76,6 +93,47 @@ export default function VisitShow({ visit, branding }: { visit: VisitDetail; bra
                         </Button>
                     </div>
                 </div>
+
+                {hasVerifiedResults && can('results.summarize') && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center justify-between text-base">
+                                <span className="flex items-center gap-2">
+                                    <Sparkles className="size-4" /> AI summary
+                                </span>
+                                {visit.ai_summary && (
+                                    <Button variant="outline" size="sm" onClick={generateSummary} disabled={generating}>
+                                        {generating ? <LoaderCircle className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+                                        Regenerate
+                                    </Button>
+                                )}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {visit.ai_summary ? (
+                                <div className="flex flex-col gap-2">
+                                    <p className="text-sm whitespace-pre-wrap">{visit.ai_summary}</p>
+                                    <p className="text-muted-foreground text-xs">
+                                        {visit.ai_summary_provider}
+                                        {visit.ai_summary_model ? ` · ${visit.ai_summary_model}` : ''}
+                                        {visit.summary_author ? ` · ${visit.summary_author.name}` : ''}
+                                        {visit.ai_summary_generated_at ? ` · ${formatDateTime(visit.ai_summary_generated_at)}` : ''}
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-start gap-2">
+                                    <p className="text-muted-foreground text-sm">
+                                        Generate a plain-language summary of the verified results using the configured AI provider.
+                                    </p>
+                                    <Button onClick={generateSummary} disabled={generating}>
+                                        {generating ? <LoaderCircle className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+                                        Generate AI summary
+                                    </Button>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
 
                 <div id="receipt" className="flex flex-col gap-4">
                     <Card>
