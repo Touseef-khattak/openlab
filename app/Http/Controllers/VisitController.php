@@ -66,6 +66,7 @@ class VisitController extends Controller
             'patient',
             'doctor:id,name,specialty',
             'creator:id,name',
+            'summaryAuthor:id,name',
             'samples',
             'visitTests.test:id,code,name,specimen_type',
             'visitTests.sample:id,sample_number,specimen_type,status',

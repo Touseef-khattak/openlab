@@ -7,6 +7,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResultEntryController;
 use App\Http\Controllers\SampleController;
+use App\Http\Controllers\SummaryController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\VisitController;
@@ -76,6 +77,11 @@ Route::middleware(['auth'])->group(function () {
         ->whereNumber('visit')
         ->middleware('can:reports.view')
         ->name('visits.report');
+
+    Route::post('visits/{visit}/summary', [SummaryController::class, 'store'])
+        ->whereNumber('visit')
+        ->middleware('can:results.summarize')
+        ->name('visits.summary');
 
     // Business / MIS reports (admin — reports.business)
     Route::middleware('can:reports.business')->group(function () {

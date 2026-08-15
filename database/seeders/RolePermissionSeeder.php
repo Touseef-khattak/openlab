@@ -24,6 +24,7 @@ class RolePermissionSeeder extends Seeder
             'visits.manage',
             'results.enter',
             'results.verify',
+            'results.summarize',
             'reports.view',
             'reports.print',
             'reports.business',
@@ -58,7 +59,7 @@ class RolePermissionSeeder extends Seeder
                 'patients.view',
                 'catalog.view',
                 'visits.view',
-                'results.enter', 'results.verify',
+                'results.enter', 'results.verify', 'results.summarize',
                 'reports.view', 'reports.print',
             ],
         ];

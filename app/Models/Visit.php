@@ -25,6 +25,11 @@ class Visit extends Model
         'paid_amount',
         'payment_status',
         'created_by',
+        'ai_summary',
+        'ai_summary_provider',
+        'ai_summary_model',
+        'ai_summary_generated_at',
+        'ai_summary_by',
     ];
 
     protected function casts(): array
@@ -36,6 +41,7 @@ class Visit extends Model
             'net_amount' => 'decimal:2',
             'paid_amount' => 'decimal:2',
             'payment_status' => PaymentStatus::class,
+            'ai_summary_generated_at' => 'datetime',
         ];
     }
 
@@ -52,6 +58,11 @@ class Visit extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function summaryAuthor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'ai_summary_by');
     }
 
     public function samples(): HasMany
