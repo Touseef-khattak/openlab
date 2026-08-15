@@ -50,6 +50,7 @@ class LlmManager
                 $this->config['gemini'],
                 $this->config['timeout'],
                 $this->config['max_output_tokens'],
+                $this->config['verify_ssl'] ?? true,
             ),
             'fake' => new FakeDriver(),
             // 'openai' and 'anthropic' drivers plug in here (see plan) once their keys are used.

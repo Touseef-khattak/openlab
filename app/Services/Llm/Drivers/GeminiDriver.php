@@ -15,6 +15,7 @@ class GeminiDriver implements LlmProvider
         private array $config,
         private int $timeout = 30,
         private int $maxOutputTokens = 800,
+        private bool $verifySsl = true,
     ) {}
 
     public function name(): string
@@ -30,9 +31,15 @@ class GeminiDriver implements LlmProvider
 
         $url = rtrim($this->config['endpoint'], '/') . "/models/{$this->config['model']}:generateContent";
 
-        $response = Http::timeout($this->timeout)
+        $request = Http::timeout($this->timeout)
             ->withQueryParameters(['key' => $this->config['key']])
-            ->acceptJson()
+            ->acceptJson();
+
+        if (! $this->verifySsl) {
+            $request = $request->withoutVerifying();
+        }
+
+        $response = $request
             ->post($url, [
                 'systemInstruction' => ['parts' => [['text' => $systemPrompt]]],
                 'contents' => [['role' => 'user', 'parts' => [['text' => $userPrompt]]]],

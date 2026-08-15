@@ -8,6 +8,10 @@ return [
     'timeout' => (int) env('LLM_TIMEOUT', 30),
     'max_output_tokens' => (int) env('LLM_MAX_OUTPUT_TOKENS', 800),
 
+    // Leave true. Set false ONLY for local dev when PHP has no CA bundle
+    // (cURL error 60). The correct fix is to configure curl.cainfo in php.ini.
+    'verify_ssl' => (bool) env('LLM_VERIFY_SSL', true),
+
     // When false, report payloads sent to the LLM are de-identified
     // (age + gender + result values only; no name, CNIC, phone or MRN).
     'include_identifiers' => (bool) env('LLM_SUMMARY_INCLUDE_IDENTIFIERS', false),
